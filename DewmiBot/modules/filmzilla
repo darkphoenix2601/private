@@ -1,0 +1,51 @@
+import logging
+
+from pyrogram import filters, command
+from pyrogram import Client
+from pyrogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
+
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
+
+"https://api.singledevelopers.net/filmszilla?query=" = YoutubeSearch 
+    
+@Client.on_message(command(["search"]))
+async def search(_, message: Message):
+
+    keyboard = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "🗑 Close", callback_data="cls",
+                )
+            ]
+        ]
+    )
+
+    try:
+        if len(message.command) < 2:
+            await message.reply_text("/search **needs an argument !**")
+            return
+        query = message.text.split(None, 1)[1]
+        m = await message.reply_text("🔎 **Searching...**")
+        results = YoutubeSearch(query, max_results=1).to_dict()
+        i = 0
+        text = ""
+        while i < 1:
+            text += f"🏷 **Name:** __{results[i]['title']}__\n"
+            text += f"⏱ **Duration:** `{results[i]['duration']}`\n"
+            text += f"👀 **Views:** `{results[i]['views']}`\n"
+            text += f"📣 **Channel:** {results[i]['channel']}\n"
+            text += f"🔗: https://api.singledevelopers.net/filmszilla?query={results[i]['url_suffix']}\n\n"
+            i += 1
+        await m.edit(text, reply_markup=keyboard, disable_web_page_preview=True)
+    except Exception as e:
+        await m.edit(str(e))
